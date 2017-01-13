@@ -34,7 +34,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity generate_data is
 Port ( 
     clk_40 : in std_logic;
-    data : out std_logic_vector(252 downto 0)
+    data : out std_logic_vector(253 downto 0)
 );
 end generate_data;
 
@@ -45,11 +45,14 @@ begin
     variable strip_num : integer :=0;
     begin
         if rising_edge(clk_40) then
-            if strip_num>250 then
+            if strip_num>248 then
                 strip_num := 0;
+            else
+                strip_num := strip_num+5;
             end if;
-            strip_num := strip_num+5;
+            data_tmp(253 downto strip_num+2) <= (others=>'0');
             data_tmp(strip_num+1 downto strip_num)  <= "11";
+            data_tmp(strip_num-1 downto 0) <= (others=>'0');
             data <= data_tmp;
         end if;
     end process;

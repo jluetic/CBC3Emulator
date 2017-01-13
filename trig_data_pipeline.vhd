@@ -36,6 +36,7 @@ Port (
     clk_40 : in std_logic;
     reset_i : in std_logic;
     trigger_i : in std_logic;
+    trig_lat_i : in std_logic_vector(8 downto 0);
     data_i : in std_logic_vector(253 downto 0);
     data_o : out std_logic_vector(279 downto 0)
 );
@@ -58,7 +59,7 @@ architecture Behavioral of trig_data_pipeline is
     signal pipeline : pipeline_arr;
     signal l1_cnt : integer := 0;
     signal tr_event : trig_event := (start_bits=>"00", error_bits=>"00", pipeline_address=>std_logic_vector(to_unsigned(pipeline_add_in,9)), l1_counter=>std_logic_vector(to_unsigned(l1_cnt,9)),cbc_data=>data_i, zeros=>"0000");
-    signal l1_latency : integer := 2; -- FIXME should come from the register
+    signal l1_latency : integer := to_integer(unsigned(trig_lat_i)); 
      
 begin
     -- writing to the pipeline
@@ -101,7 +102,7 @@ begin
                             pipeline(pipeline_add_out).pipeline_address &
                             pipeline(pipeline_add_out).error_bits & 
                             pipeline(pipeline_add_out).start_bits;
-                -- FIXME implement error bits (latency error)
+                -- FIXME implement latency error
                 if l1_cnt+1=512 then
                     l1_cnt<=0;
                 else

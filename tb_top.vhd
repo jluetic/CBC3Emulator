@@ -51,6 +51,7 @@ architecture Behavioral of tb_top is
     signal clk320 : std_logic :='0';
     
     signal fast_cmd_i : std_logic :='0';
+    signal data_bit_o : std_logic := '0';
     
    -- signal regs_page1_top : array_reg_page1 := regs_page1_default;
    -- signal regs_page2_top : array_reg_page2 := regs_page2_default;
@@ -67,7 +68,8 @@ begin
         sda_mosi_i_top => sda_mosi_i,
         sda_tri_o_top => sda_tri_o,
         clk320_top => clk320,
-        fast_cmd_top => fast_cmd_i
+        fast_cmd_top => fast_cmd_i,
+        data_bit_out_top => data_bit_o
         
         --regs_page1_top_o => regs_page1,
         --regs_page2_top_o => regs_page2

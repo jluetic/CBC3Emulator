@@ -22,7 +22,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 --use work.user_package.all;
-use work.all;
+use work.user_package.all;
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
 --use IEEE.NUMERIC_STD.ALL;
@@ -39,8 +39,8 @@ entity CBC3_top is
        sda_mosi_i_top : in std_logic;
        sda_tri_o_top : out std_logic;
        clk320_top : in std_logic;
-       fast_cmd_top : in std_logic
-       
+       fast_cmd_top : in std_logic;
+       data_bit_out_top : out std_logic
   );
 end CBC3_top;
 
@@ -62,10 +62,9 @@ architecture Behavioral of CBC3_top is
       signal test_pulse_trigger_top : std_logic := '0';
       signal orbit_reset_top : std_logic := '0';
       signal clk40_top : std_logic := '0';
-       
+      signal trig_lat_top : std_logic_vector (8 downto 0) := regs_page1_top(0)(0) & regs_page1_top(1); 
 begin
     
-
 --==============================--
 i2c: entity work.phy_i2c_slave
 --==============================--
@@ -109,6 +108,18 @@ port map
     orbit_reset_o => orbit_reset_top,
     clk40_o => clk40_top 
    
+);
+
+--==============================--
+trig_data: entity work.trig_data
+--==============================--
+port map( 
+    clk_40 => clk40_top,
+    clk_320 => clk320_top,
+    reset_i => fast_reset_top,
+    trigger_i => trigger_top,
+    trig_lat_i => trig_lat_top,
+    data_bit_out => data_bit_out_top
 );
 
 
