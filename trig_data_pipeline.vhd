@@ -55,19 +55,20 @@ architecture Behavioral of trig_data_pipeline is
     type pipeline_arr is array (511 downto 0) of trig_event;
   
     signal pipeline_add_in : integer := 0;
-    signal pipeline_add_out : integer := 0;
+
     signal pipeline : pipeline_arr;
     signal l1_cnt : integer := 0;
-    signal tr_event : trig_event := (start_bits=>"00", error_bits=>"00", pipeline_address=>std_logic_vector(to_unsigned(pipeline_add_in,9)), l1_counter=>std_logic_vector(to_unsigned(l1_cnt,9)),cbc_data=>data_i, zeros=>"0000");
+    signal tr_event : trig_event := (start_bits=>"00", error_bits=>"00", pipeline_address=>"000000000", l1_counter=>"000000000",cbc_data=>(others=>'0'), zeros=>"0000");
     signal l1_latency : integer := to_integer(unsigned(trig_lat_i)); 
      
 begin
+    l1_latency <= to_integer(unsigned(trig_lat_i));
     -- writing to the pipeline
     write_to_pipe: process (clk_40)
     begin
         if (rising_edge(clk_40)) then
             if (reset_i='1') then
-                tr_event <= (start_bits=>"00", error_bits=>"00", pipeline_address=>std_logic_vector(to_unsigned(pipeline_add_in,9)), l1_counter=>std_logic_vector(to_unsigned(l1_cnt,9)),cbc_data=>data_i, zeros=>"0000");
+                tr_event <= (start_bits=>"00", error_bits=>"00", pipeline_address=>"000000000", l1_counter=>"000000000",cbc_data=>(others=>'0'), zeros=>"0000");
                 pipeline_add_in <= 0;
             end if;
             tr_event <=(start_bits=>"11", error_bits=>"00", pipeline_address=>std_logic_vector(to_unsigned(pipeline_add_in,9)), l1_counter=>std_logic_vector(to_unsigned(l1_cnt,9)),cbc_data=>data_i, zeros=>"0000");
@@ -82,18 +83,19 @@ begin
     
     -- reading from the pipeline
     read_from_pipe: process(clk_40)
+    variable pipeline_add_out : integer := 0;
     begin
         if (rising_edge(clk_40)) then   
             if (reset_i='1') then
                 data_o <= (others=>'0');
                 l1_cnt<=0; 
-                pipeline_add_out<=0;
+                pipeline_add_out:=0;
             elsif (trigger_i='1') then
                 -- trigger latency
                 if (pipeline_add_in<l1_latency) then
-                    pipeline_add_out <= 512-l1_latency+pipeline_add_in;
+                    pipeline_add_out := 512-l1_latency+pipeline_add_in;
                 else
-                    pipeline_add_out <= pipeline_add_in-l1_latency;
+                    pipeline_add_out := pipeline_add_in-l1_latency;
                 end if;
                 -- output data
                   data_o <= pipeline(pipeline_add_out).zeros &

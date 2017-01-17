@@ -56,7 +56,8 @@ architecture Behavioral of CBC3_top is
 --    signal clk320_top : std_logic :='0';
       signal regs_page1_top : array_reg_page1 := regs_page1_default;
       signal regs_page2_top : array_reg_page2 := regs_page2_default;
-      
+     
+      signal synch_bit_top : std_logic := '0';  
       signal fast_reset_top:  std_logic := '0';
       signal trigger_top : std_logic := '0';
       signal test_pulse_trigger_top : std_logic := '0';
@@ -88,6 +89,7 @@ port map
 (
     reset_i => fast_reset_top,
     clk320 => clk320_top,
+    synch_bit_o => synch_bit_top,
     
     regs_page1_i => regs_page1_top,
     regs_page2_i => regs_page2_top
@@ -119,6 +121,7 @@ port map(
     reset_i => fast_reset_top,
     trigger_i => trigger_top,
     trig_lat_i => trig_lat_top,
+    synch_bit_i => synch_bit_top,
     data_bit_out => data_bit_out_top
 );
 
