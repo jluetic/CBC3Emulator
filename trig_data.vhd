@@ -30,7 +30,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 -- any Xilinx leaf cells in this code.
 --library UNISIM;
 --use UNISIM.VComponents.all;
-use work.all;
+use work.user_package.all;
 
 entity trig_data is
 Port ( 
@@ -38,6 +38,8 @@ Port (
     clk_320 : in std_logic;
     reset_i : in std_logic;
     trigger_i : in std_logic;
+    trig_lat_i : in std_logic_vector(8 downto 0);
+    synch_bit_i : in std_logic;
     data_bit_out : out std_logic
 );
 end trig_data;
@@ -46,21 +48,23 @@ architecture Structural of trig_data is
 signal data_gen : std_logic_vector(253 downto 0);
 signal data_from_pipe : std_logic_vector(279 downto 0);
 begin
-    gen_data : entity generate_data port map (
+    gen_data : entity work.generate_data port map (
         clk_40 => clk_40,
         data => data_gen        
     );
-    pipeline: entity trig_data_pipeline port map (
+    pipeline: entity work.trig_data_pipeline port map (
         clk_40 => clk_40,
         reset_i => reset_i,
         trigger_i => trigger_i,
+        trig_lat_i=>trig_lat_i,
         data_i => data_gen,
         data_o => data_from_pipe
     );
-    fifo : entity buffer_fifo port map (
+    fifo : entity work.buffer_fifo port map (
         clk_40 => clk_40,
         clk_320 => clk_320,
-        reset => reset_i,
+        reset_i => reset_i,
+        synch_bit_i => synch_bit_i,
         data_in => data_from_pipe,
         data_bit_out => data_bit_out
     );
