@@ -44,6 +44,7 @@ entity stub_data_output is
       clk320: in std_logic; -- 320 MHz
       reset_i: in std_logic;
       stub_data_to_fc7_o: out stub_lines_r;
+      synch_bit_o : out std_logic;
       
       regs_page1_i        : in array_reg_page1;
       regs_page2_i        : in array_reg_page2
@@ -79,8 +80,10 @@ begin
                     if(counter=8) then
                         dp5_temp := '1';
                         counter:=0;
+                        synch_bit_o <= '1';
                     else 
                         dp5_temp := '0';
+                        synch_bit_o <= '0';
                     end if; --end of counter condition 
                     VTH := regs_page1_i(80)(1) & regs_page1_i(80)(0) & regs_page1_i(79); 
                     VTH_integer := to_integer(ieee.numeric_std.unsigned(VTH));
